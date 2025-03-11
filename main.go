@@ -8,27 +8,45 @@ import (
 	"strings"
 )
 
-// 净化文件名，去除无关字符
-func cleanFileName(fileName string) string {
-	// 移除类似 [xxx-xxx.xxx] 的内容
-	cleanName := regexp.MustCompile(`\[.*?\]`).ReplaceAllString(fileName, "")
-	// 移除可能剩余的前导和尾随空格
-	cleanName = strings.TrimSpace(cleanName)
-	return cleanName
+// 净化文件名，提取数字并按指定格式重组
+func cleanFileName(fileName string, seriesName string, removePatterns []string) string {
+	// 分离文件名和扩展名
+	ext := filepath.Ext(fileName)
+	baseName := strings.TrimSuffix(fileName, ext)
+
+	// 移除指定的字符串
+	for _, pattern := range removePatterns {
+		baseName = strings.ReplaceAll(baseName, pattern, "")
+	}
+
+	// 从后向前查找最后一个数字部分
+	numberRegex := regexp.MustCompile(`(\d+)[^\d]*$`)
+	// 找出匹配的数字
+	match := numberRegex.FindStringSubmatch(baseName)
+	// 使用找到的数字
+	if len(match) > 1 {
+		// 如果找到数字，则使用新格式；否则保持原文件名
+		return fmt.Sprintf("%s-%s%s", seriesName, match[1], ext)
+	}
+
+	// 如果没有找到数字，返回原始文件名
+	return fileName
 }
 
 func main() {
 	// 检查参数数量
 	if len(os.Args) < 2 {
-		fmt.Println("请提供至少一个参数：文件名片段。")
+		fmt.Println("请提供至少一个参数：剧集名。")
 		return
 	}
 
-	fileNameFragment := os.Args[1] // 文件名片段
+	seriesName := os.Args[1] // 剧集名
+	// 获取要删除的字符串列表（如果有的话）
+	removePatterns := os.Args[2:]
 
-	// 检查文件名片段长度
-	if len(fileNameFragment) < 1 {
-		fmt.Println("文件名片段长度不能少于一个字符！")
+	// 检查剧集名长度
+	if len(seriesName) < 1 {
+		fmt.Println("剧集名长度不能少于一个字符！")
 		return
 	}
 
@@ -39,15 +57,8 @@ func main() {
 		return
 	}
 
-	// 解析文件名片段中的路径
-	dir, fragment := filepath.Split(fileNameFragment)
-	if dir != "" {
-		// 如果文件名片段包含路径，则更新工作目录
-		workingDir = filepath.Join(workingDir, dir)
-	}
-
 	// 创建目标目录
-	targetDir := filepath.Join(workingDir, fragment)
+	targetDir := filepath.Join(workingDir, seriesName)
 	err = os.MkdirAll(targetDir, 0755)
 	if err != nil {
 		fmt.Printf("创建目标目录失败: %v\n", err)
@@ -68,7 +79,7 @@ func main() {
 
 		// 检查文件名是否包含指定片段
 		baseName := filepath.Base(path)
-		if strings.Contains(strings.ToLower(baseName), strings.ToLower(fragment)) {
+		if strings.Contains(strings.ToLower(baseName), strings.ToLower(seriesName)) {
 			matches = append(matches, path)
 		}
 
@@ -89,7 +100,7 @@ func main() {
 	for _, match := range matches {
 		// 获取文件名并净化
 		baseName := filepath.Base(match)
-		cleanName := cleanFileName(baseName)
+		cleanName := cleanFileName(baseName, seriesName, removePatterns)
 
 		// 构造目标路径
 		targetPath := filepath.Join(targetDir, cleanName)
@@ -103,8 +114,8 @@ func main() {
 		fmt.Printf("已移动并净化: %s -> %s\n", match, targetPath)
 	}
 
-	// 删除以文件名片段开头的空目录
-	err = removeEmptyDirs(workingDir, fragment)
+	// 删除以剧集名开头的空目录
+	err = removeEmptyDirs(workingDir, seriesName)
 	if err != nil {
 		fmt.Printf("删除空目录失败: %v\n", err)
 		return

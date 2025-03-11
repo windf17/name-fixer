@@ -10,8 +10,9 @@ Name Fixer 是一个命令行工具，用于批量处理文件名，可以移除
 
 ### 功能特点
 - 支持按文件名片段匹配文件
-- 自动清理文件名中的方括号标记
-- 移除文件名前后的空格
+- 自动提取文件名中的数字编号
+- 支持自定义要移除的字符串列表
+- 智能识别文件编号位置
 - 将匹配的文件移动到新目录
 - 自动清理空目录
 - 支持递归搜索子目录
@@ -27,19 +28,19 @@ Name Fixer 是一个命令行工具，用于批量处理文件名，可以移除
 ### 使用方法
 ```bash
 # Windows
-name-fixer.exe <文件名片段>
+name-fixer.exe <剧集名> [要移除的字符串...]
 
 # Linux/macOS
-./name-fixer <文件名片段>
+./name-fixer <剧集名> [要移除的字符串...]
 ```
 
 ### 使用示例
 ```bash
-# 匹配并处理包含"example"的文件
-name-fixer.exe example
+# 基本用法：匹配并处理包含"动漫名"的文件
+name-fixer.exe 动漫名
 
-# 处理指定子目录中的文件
-name-fixer.exe path/to/dir/example
+# 高级用法：指定要移除的字符串
+name-fixer.exe 动漫名 "[字幕组]" "1080P" "第话"
 ```
 
 ### 处理规则
@@ -48,18 +49,25 @@ name-fixer.exe path/to/dir/example
 3. 移动匹配的文件到新目录，同时清理文件名
 4. 自动删除剩余的空目录
 
+### 文件名处理规则
+1. 移除指定的字符串（如果提供）
+2. 从文件名中提取最后出现的数字作为集数
+3. 生成新文件名格式："剧集名-集数.扩展名"
+4. 如果文件名中没有数字，则保持原文件名不变
+
 ---
 
 <a name="english"></a>
 ## English
 
 ### Introduction
-Name Fixer is a command-line tool for batch processing filenames. It can remove specific markers (like `[xxx-xxx.xxx]`) from filenames and organize matching files into a designated directory.
+Name Fixer is a command-line tool for batch processing filenames. It can extract episode numbers, remove specific markers, and organize matching files into a designated directory.
 
 ### Features
 - Match files by filename fragment
-- Automatically clean bracket markers from filenames
-- Remove leading and trailing spaces
+- Automatically extract episode numbers from filenames
+- Support custom string removal patterns
+- Smart episode number detection
 - Move matching files to a new directory
 - Clean up empty directories
 - Support recursive subdirectory search
@@ -75,19 +83,19 @@ Name Fixer is a command-line tool for batch processing filenames. It can remove 
 ### Usage
 ```bash
 # Windows
-name-fixer.exe <filename-fragment>
+name-fixer.exe <series-name> [strings-to-remove...]
 
 # Linux/macOS
-./name-fixer <filename-fragment>
+./name-fixer <series-name> [strings-to-remove...]
 ```
 
 ### Examples
 ```bash
-# Match and process files containing "example"
-name-fixer.exe example
+# Basic usage: Match and process files containing "SeriesName"
+name-fixer.exe SeriesName
 
-# Process files in a specific subdirectory
-name-fixer.exe path/to/dir/example
+# Advanced usage: Specify strings to remove
+name-fixer.exe SeriesName "[Sub-Group]" "1080P" "EP"
 ```
 
 ### Processing Rules
@@ -95,3 +103,9 @@ name-fixer.exe path/to/dir/example
 2. Creates a new directory named after the search fragment
 3. Moves matching files to the new directory while cleaning their filenames
 4. Automatically removes remaining empty directories
+
+### Filename Processing Rules
+1. Remove specified strings (if provided)
+2. Extract the last occurring number from the filename as the episode number
+3. Generate new filename format: "series-name-episode-number.extension"
+4. If no number is found in the filename, keep the original filename unchanged
