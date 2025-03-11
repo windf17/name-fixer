@@ -37,7 +37,7 @@ func TestCleanFileName(t *testing.T) {
 			name:           "文件名有多个数字和特殊字符",
 			fileName:       "[Sub-Group]_Series_01_[1080p]_[123ABC].mkv",
 			seriesName:     "Series",
-			removePatterns: []string{"[Sub-Group]", "[1080p]", "[123ABC]", "_"},
+			removePatterns: []string{ "[1080p]", "[123ABC]"},
 			want:           "Series-01.mkv",
 		},
 		{
@@ -52,6 +52,13 @@ func TestCleanFileName(t *testing.T) {
 			fileName:       "动画第一集第2话.mp4",
 			seriesName:     "动画",
 			removePatterns: []string{"第", "集", "话"},
+			want:           "动画-2.mp4",
+		},
+		{
+			name:           "文件名包含中文数字，removePatterns为空",
+			fileName:       "动画第一集第2话.mp4",
+			seriesName:     "动画",
+			removePatterns: []string{},
 			want:           "动画-2.mp4",
 		},
 		{

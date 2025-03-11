@@ -33,10 +33,86 @@ func cleanFileName(fileName string, seriesName string, removePatterns []string) 
 	return fileName
 }
 
+// 获取系统语言环境，判断是否为中文
+func isChineseLocale() bool {
+	lang := os.Getenv("LANG")
+	if lang == "" {
+		lang = os.Getenv("LANGUAGE")
+	}
+	if lang == "" {
+		lang = os.Getenv("LC_ALL")
+	}
+	return strings.HasPrefix(strings.ToLower(lang), "zh")
+}
+
+func showHelp() {
+	if isChineseLocale() {
+		fmt.Print(`名称修复工具 (Name Fixer)
+
+功能：
+  批量处理文件名，提取集数并按指定格式重命名
+
+用法：
+  name-fixer <剧集名> [要移除的字符串...]
+  name-fixer --help    显示帮助信息
+
+参数：
+  <剧集名>            必需参数，用于匹配和重命名文件
+  [要移除的字符串...]  可选参数，用于移除可能影响提取集数的干扰字符
+
+处理规则：
+  1. 移除指定的字符串（如果提供）
+  2. 从文件名中提取最后出现的数字作为集数
+  3. 生成新文件名格式："剧集名-集数.扩展名"
+  4. 如果文件名中没有数字，则保持原文件名不变
+
+示例：
+  # 基本用法：处理包含"进击的巨人"的文件
+  name-fixer 进击的巨人
+
+  # 高级用法：指定要移除的字符串
+  name-fixer 进击的巨人 "[字幕组]" "1080P"
+`)
+	} else {
+		fmt.Print(`Name Fixer
+
+Features:
+  Batch process filenames by extracting episode numbers and renaming in specified format
+
+Usage:
+  name-fixer <series-name> [strings-to-remove...]
+  name-fixer --help    Show help information
+
+Parameters:
+  <series-name>         Required, used for matching and renaming files
+  [strings-to-remove]   Optional, used to remove strings that may interfere with episode number extraction
+
+Processing Rules:
+  1. Remove specified strings (if provided)
+  2. Extract the last occurring number from the filename as the episode number
+  3. Generate new filename format: "series-name-episode-number.extension"
+  4. If no number is found in the filename, keep the original filename unchanged
+
+Examples:
+  # Basic usage: Process files containing "Attack on Titan"
+  name-fixer "Attack on Titan"
+
+  # Advanced usage: Specify strings to remove
+  name-fixer "Attack on Titan" "[SubGroup]" "1080P"
+`)
+	}
+}
+
 func main() {
 	// 检查参数数量
 	if len(os.Args) < 2 {
-		fmt.Println("请提供至少一个参数：剧集名。")
+		fmt.Println("请提供至少一个参数：剧集名。使用 --help 查看帮助信息。")
+		return
+	}
+
+	// 检查是否为帮助命令
+	if os.Args[1] == "--help" {
+		showHelp()
 		return
 	}
 
