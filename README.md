@@ -18,20 +18,28 @@ Name Fixer 是一个命令行工具，用于批量处理文件名，可以移除
 - 支持递归搜索子目录
 
 ### 安装方法
-1. 确保已安装 Go 1.23.5 或更高版本
-2. 克隆或下载本项目
-3. 在项目目录下执行：
+#### Windows系统
+1. 下载 name-fixer.exe 文件
+2. 直接运行即可使用
+
+#### Linux系统
+1. 下载 name-fixer 文件
+2. 给予可执行权限：
    ```bash
-   go build
+   chmod +x name-fixer
+   ```
+3. 移动到系统目录以便全局使用：
+   ```bash
+   sudo mv name-fixer /usr/bin
    ```
 
 ### 使用方法
 ```bash
-# Windows
+# Windows系统
 name-fixer.exe <剧集名> [要移除的字符串...]
 
-# Linux/macOS
-./name-fixer <剧集名> [要移除的字符串...]
+# Linux系统
+name-fixer <剧集名> [要移除的字符串...]
 ```
 
 ### 使用示例
@@ -59,7 +67,7 @@ name-fixer.exe 动漫名 "[字幕组]" "1080P" "第话"
 1. 移除指定的字符串（如果提供）
 2. 从文件名中提取最后出现的数字作为集数
 3. 生成新文件名格式："剧集名-集数.扩展名"
-4. 如果文件名中没有数字，则保持原文件名不变
+4. 如果文件名中没有数字，则返回清理后的文件名
 
 ---
 
@@ -79,11 +87,19 @@ Name Fixer is a command-line tool for batch processing filenames. It can extract
 - Support recursive subdirectory search
 
 ### Installation
-1. Ensure Go 1.23.5 or higher is installed
-2. Clone or download this project
-3. In the project directory, run:
+#### Windows
+1. Download the name-fixer.exe file
+2. Run it directly
+
+#### Linux
+1. Download the name-fixer file
+2. Make it executable:
    ```bash
-   go build
+   chmod +x name-fixer
+   ```
+3. Move to system directory for global access:
+   ```bash
+   sudo mv name-fixer /usr/bin
    ```
 
 ### Usage
@@ -91,8 +107,8 @@ Name Fixer is a command-line tool for batch processing filenames. It can extract
 # Windows
 name-fixer.exe <series-name> [strings-to-remove...]
 
-# Linux/macOS
-./name-fixer <series-name> [strings-to-remove...]
+# Linux
+name-fixer <series-name> [strings-to-remove...]
 ```
 
 ### Examples
@@ -114,4 +130,4 @@ name-fixer.exe SeriesName "[Sub-Group]" "1080P" "EP"
 1. Remove specified strings (if provided)
 2. Extract the last occurring number from the filename as the episode number
 3. Generate new filename format: "series-name-episode-number.extension"
-4. If no number is found in the filename, keep the original filename unchanged
+4. If no number is found in the filename, return the cleaned filename

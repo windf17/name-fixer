@@ -25,12 +25,12 @@ func cleanFileName(fileName string, seriesName string, removePatterns []string) 
 	match := numberRegex.FindStringSubmatch(baseName)
 	// 使用找到的数字
 	if len(match) > 1 {
-		// 如果找到数字，则使用新格式；否则保持原文件名
+		// 如果找到数字，则使用新格式
 		return fmt.Sprintf("%s-%s%s", seriesName, match[1], ext)
 	}
 
-	// 如果没有找到数字，返回原始文件名
-	return fileName
+	// 如果没有找到数字，返回清理后的文件名
+	return strings.TrimSpace(baseName) + ext
 }
 
 // 获取系统语言环境，判断是否为中文

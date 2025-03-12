@@ -75,6 +75,20 @@ func TestCleanFileName(t *testing.T) {
 			removePatterns: []string{"_"},
 			want:           "Series Name-01.mkv",
 		},
+		{
+			name:           "文件名不包含数字但需要移除指定字符串",
+			fileName:       "[字幕组]测试文件[1080P].mp4",
+			seriesName:     "测试",
+			removePatterns: []string{"[字幕组]", "[1080P]"},
+			want:           "测试文件.mp4",
+		},
+		{
+			name:           "文件名不包含数字且需要移除多个重复字符串",
+			fileName:       "[Sub]测试[Sub]文件[Sub].mp4",
+			seriesName:     "测试",
+			removePatterns: []string{"[Sub]"},
+			want:           "测试文件.mp4",
+		},
 	}
 
 	for _, tt := range tests {
