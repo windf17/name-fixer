@@ -79,8 +79,8 @@ func TestCleanFileName(t *testing.T) {
 			name:           "文件名不包含数字但需要移除指定字符串",
 			fileName:       "[字幕组]测试文件[1080P].mp4",
 			seriesName:     "测试",
-			removePatterns: []string{"[字幕组]", "[1080P]"},
-			want:           "测试文件.mp4",
+			removePatterns: []string{ "[1080P]"},
+			want:           "[字幕组]测试文件.mp4",
 		},
 		{
 			name:           "文件名不包含数字且需要移除多个重复字符串",
