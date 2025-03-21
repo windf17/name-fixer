@@ -16,7 +16,15 @@ func cleanFileName(fileName string, seriesName string, removePatterns []string) 
 
 	// 移除指定的字符串
 	for _, pattern := range removePatterns {
-		baseName = strings.ReplaceAll(baseName, pattern, "")
+		// 如果pattern包含"=>"，则按"=>"分割，前面的部分是要处理的字符串，后面的部分是要替换的字符串
+		if strings.Contains(pattern, "=>") {
+			parts := strings.Split(pattern, "=>")
+			if len(parts) == 2 {
+				baseName = strings.ReplaceAll(baseName, parts[0], parts[1])
+			}
+		} else {
+			baseName = strings.ReplaceAll(baseName, pattern, "")
+		}
 	}
 
 	// 从后向前查找最后一个数字部分
@@ -53,12 +61,12 @@ func showHelp() {
   批量处理文件名，提取集数并按指定格式重命名
 
 用法：
-  name-fixer <剧集名> [要移除的字符串...]
-  name-fixer --help    显示帮助信息
+  nf <剧集名> [要移除的字符串...]
+  nf --help    显示帮助信息
 
 参数：
   <剧集名>            必需参数，用于匹配和重命名文件
-  [要移除的字符串...]  可选参数，用于移除可能影响提取集数的干扰字符
+  [要移除的字符串...]  可选参数，用于移除可能影响提取集数的干扰字符。格式为"旧字符串=>新字符串"，如果不指定新字符串则直接移除旧字符串。
 
 处理规则：
   1. 移除指定的字符串（如果提供）
@@ -68,10 +76,13 @@ func showHelp() {
 
 示例：
   # 基本用法：处理包含"进击的巨人"的文件
-  name-fixer 进击的巨人
+  nf 进击的巨人
 
   # 高级用法：指定要移除的字符串
-  name-fixer 进击的巨人 "[字幕组]" "1080P"
+  nf "进击的巨人" "[字幕组]" "1080P"
+
+  # 使用字符串替换功能
+  nf "进击的巨人" "第=>Episode " "季=>Season "
 `)
 	} else {
 		fmt.Print(`Name Fixer
@@ -80,12 +91,12 @@ Features:
   Batch process filenames by extracting episode numbers and renaming in specified format
 
 Usage:
-  name-fixer <series-name> [strings-to-remove...]
-  name-fixer --help    Show help information
+  nf <series-name> [strings-to-remove...]
+  nf --help    Show help information
 
 Parameters:
   <series-name>         Required, used for matching and renaming files
-  [strings-to-remove]   Optional, used to remove strings that may interfere with episode number extraction
+  [strings-to-remove]   Optional, used to remove strings that may interfere with episode number extraction. Format is "old-string=>new-string", if new-string is not specified, old-string will be removed directly.
 
 Processing Rules:
   1. Remove specified strings (if provided)
@@ -95,10 +106,13 @@ Processing Rules:
 
 Examples:
   # Basic usage: Process files containing "Attack on Titan"
-  name-fixer "Attack on Titan"
+  nf "Attack on Titan"
 
   # Advanced usage: Specify strings to remove
-  name-fixer "Attack on Titan" "[SubGroup]" "1080P"
+  nf "Attack on Titan" "[SubGroup]" "1080P"
+
+  # Using string replacement feature
+  nf "Attack on Titan" "Ep.=>Episode " "S.=>Season "
 `)
 	}
 }
@@ -111,7 +125,10 @@ func main() {
 	}
 
 	// 检查是否为帮助命令
-	if os.Args[1] == "--help" {
+	args := os.Args[1]
+	// args转换成大写字符串
+	args = strings.ToUpper(args)
+	if args == "--HELP" || args == "-H" || args == "-Help" || args == "-HELP" {
 		showHelp()
 		return
 	}
