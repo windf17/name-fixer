@@ -8,118 +8,6 @@ import (
 	"strings"
 )
 
-<<<<<<< HEAD
-=======
-// 净化文件名，提取数字并按指定格式重组
-func cleanFileName(fileName string, seriesName string, removePatterns []string) string {
-	// 分离文件名和扩展名
-	ext := filepath.Ext(fileName)
-	baseName := strings.TrimSuffix(fileName, ext)
-
-	// 移除指定的字符串
-	for _, pattern := range removePatterns {
-		// 如果pattern包含"=>"，则按"=>"分割，前面的部分是要处理的字符串，后面的部分是要替换的字符串
-		if strings.Contains(pattern, "=>") {
-			parts := strings.Split(pattern, "=>")
-			if len(parts) == 2 {
-				baseName = strings.ReplaceAll(baseName, parts[0], parts[1])
-			}
-		} else {
-			baseName = strings.ReplaceAll(baseName, pattern, "")
-		}
-	}
-
-	// 从后向前查找最后一个数字部分
-	numberRegex := regexp.MustCompile(`(\d+)[^\d]*$`)
-	// 找出匹配的数字
-	match := numberRegex.FindStringSubmatch(baseName)
-	// 使用找到的数字
-	if len(match) > 1 {
-		// 如果找到数字，则使用新格式
-		return fmt.Sprintf("%s-%s%s", seriesName, match[1], ext)
-	}
-
-	// 如果没有找到数字，返回清理后的文件名
-	return strings.TrimSpace(baseName) + ext
-}
-
-// 获取系统语言环境，判断是否为中文
-func isChineseLocale() bool {
-	lang := os.Getenv("LANG")
-	if lang == "" {
-		lang = os.Getenv("LANGUAGE")
-	}
-	if lang == "" {
-		lang = os.Getenv("LC_ALL")
-	}
-	return strings.HasPrefix(strings.ToLower(lang), "zh")
-}
-
-func showHelp() {
-	if isChineseLocale() {
-		fmt.Print(`名称修复工具 (Name Fixer)
-
-功能：
-  批量处理文件名，提取集数并按指定格式重命名
-
-用法：
-  nf <剧集名> [要移除的字符串...]
-  nf --help    显示帮助信息
-
-参数：
-  <剧集名>            必需参数，用于匹配和重命名文件
-  [要移除的字符串...]  可选参数，用于移除可能影响提取集数的干扰字符。格式为"旧字符串=>新字符串"，如果不指定新字符串则直接移除旧字符串。
-
-处理规则：
-  1. 移除指定的字符串（如果提供）
-  2. 从文件名中提取最后出现的数字作为集数
-  3. 生成新文件名格式："剧集名-集数.扩展名"
-  4. 如果文件名中没有数字，则保持原文件名不变
-
-示例：
-  # 基本用法：处理包含"进击的巨人"的文件
-  nf 进击的巨人
-
-  # 高级用法：指定要移除的字符串
-  nf "进击的巨人" "[字幕组]" "1080P"
-
-  # 使用字符串替换功能
-  nf "进击的巨人" "第=>Episode " "季=>Season "
-`)
-	} else {
-		fmt.Print(`Name Fixer
-
-Features:
-  Batch process filenames by extracting episode numbers and renaming in specified format
-
-Usage:
-  nf <series-name> [strings-to-remove...]
-  nf --help    Show help information
-
-Parameters:
-  <series-name>         Required, used for matching and renaming files
-  [strings-to-remove]   Optional, used to remove strings that may interfere with episode number extraction. Format is "old-string=>new-string", if new-string is not specified, old-string will be removed directly.
-
-Processing Rules:
-  1. Remove specified strings (if provided)
-  2. Extract the last occurring number from the filename as the episode number
-  3. Generate new filename format: "series-name-episode-number.extension"
-  4. If no number is found in the filename, keep the original filename unchanged
-
-Examples:
-  # Basic usage: Process files containing "Attack on Titan"
-  nf "Attack on Titan"
-
-  # Advanced usage: Specify strings to remove
-  nf "Attack on Titan" "[SubGroup]" "1080P"
-
-  # Using string replacement feature
-  nf "Attack on Titan" "Ep.=>Episode " "S.=>Season "
-`)
-	}
-}
-
->>>>>>> 62358f9c76a5157d5582740c71f87a28ecea7103
 func main() {
 	// 用于记录源文件所在的目录
 	var sourceDirs = make(map[string]bool)
@@ -137,13 +25,8 @@ func main() {
 	// 检查是否为帮助命令
 	args := os.Args[1]
 	// args转换成大写字符串
-<<<<<<< HEAD
 	argsUpper := strings.ToLower(args)
 	if argsUpper == "--help" || argsUpper == "-help" || argsUpper == "-h" || argsUpper == "--h" {
-=======
-	args = strings.ToUpper(args)
-	if args == "--HELP" || args == "-H" || args == "-Help" || args == "-HELP" {
->>>>>>> 62358f9c76a5157d5582740c71f87a28ecea7103
 		showHelp()
 		return
 	}
